@@ -1,0 +1,65 @@
+WWW::SearchBroker - Parallel metasearcher for Internet-based services (WWW, IMAP
+, LDAP, etc.)
+
+COPYRIGHT:
+    Copyright (c) 2002-2003 Nathan Bailey.  All rights reserved.
+ 
+LICENSE:
+    This program is free software; you can redistribute it and/or
+    modify it under the terms of the GNU General Public License as
+    published by the Free Software Foundation; either version 1, or (at
+    your option) any later version.
+
+LIMITATIONS:
+    This program is distributed in the hope that it will be useful, but
+    WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    General Public License for more details.
+
+*******************************************************************************
+STATUS:
+    This code should be considered very much as work-in-progress.  Any
+    part of this release could be subject to change.  'Modules list'
+    status is as follows:
+Name               DSLIP  Description                               Info
+-----------------  -----  ----------------------------------------- -----
+WWW::SearchBroker  bdpOg  Parallel metasearcher for 'net services   NATE
+
+INSTALLATION:
+    WWW::SearchBroker uses the following modules/distributions.
+
+	LWP::UserAgent	 - required (for non-WWW::Search searching)
+	WWW::Search	 - required (for handcrafted web searchers)
+	Net::LDAP	 - required (for LDAP directory searching)
+	Mail::IMAPClient - required (for IMAP mailbox searching)
+	WWW::Scraper	 - optional (for scraper-based searches, esp. Sherlock)
+
+    First ensure the above modules/distributions are installed (perhaps
+    by using a command such as 'perl -e "use LWP::UserAgent; use \
+    WWW::Search; use Net::LDAP; use Mail::IMAPClient; use WWW::Scraper;"') then
+    build/test/install WWW::SearchBroker by doing:
+
+*******************************************************************************
+*** NOTE!!! This isn't done yet.  Will be done for the next version.
+*******************************************************************************
+            perl Makefile.PL
+            make
+            make test
+            make install
+
+    This module contains documentation on the object and its methods.
+    Once installed you can use the 'perldoc WWW::SearchBroker' command to
+    obtain the documentation.  This package also includes several
+    test scripts with example code.
+
+*******************************************************************************
+COMPATIBILITY:
+    This module was developed on Mac OS X 10.2.5, and has been tested on
+    Red Hat (v8) Linux (kernel 2.4)
+
+TODO:
+    Convert existing file-based comms to debug-only code and use
+    sockets exclusively.
+
+BUGS:
+    Bug reports can be sent to the author via his CPAN address.

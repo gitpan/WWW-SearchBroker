@@ -1,0 +1,22 @@
+Changes				History of this package
+MANIFEST			This file
+Makefile.PL			Makefile generator
+README				Get you started with this package
+t/README			How to run and set up tests
+t/TEST				Run tests
+t/agents/grep.t			Test the grep agent (simple sample agent)
+t/agents/imap.t			Test the imap agent
+t/base/common.t			Test the common module (global values)
+t/base/broker.t			Test the broker component
+t/base/score.t			Test the scoring function
+t/base/search.t			Test the search component (requires broker)
+broker.pl			Temporarily required for t/base/search.t
+lib/WWW/SearchBroker.pm		Placeholder/documentation
+lib/WWW/SearchBroker/Common.pm	Common constants
+lib/WWW/SearchBroker/Broker.pm	Broker component of SearchBroker
+lib/WWW/SearchBroker/Search.pm	Search component of SearchBroker
+lib/WWW/SearchBroker/Aggregator_Scorer.pm	Aggregation/Scoring component
+lib/List/Misc.pm		Utility module for managing arrays/lists
+agents/grep.pl			Sample agent for simplicity/testing
+agents/imap.pl			IMAP INBOX/Sent folder searcher
+agents/directory.pl		LDAP directory searcher

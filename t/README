@@ -1,0 +1,13 @@
+Self test suite for the SearchBroker modules
+--------------------------------------------
+
+Tests are invoked by running the ./TEST script, but usually you
+run the tests with "make test" at the top WWW::SearchBroker directory.
+Use -v option for verbose tests.  You might run an individual test
+like this:
+
+  ./TEST -v base/date
+
+or all tests in a directory like this
+
+  ./TEST base
