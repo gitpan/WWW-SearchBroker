@@ -1,7 +1,7 @@
 # WWW::SearchBroker
 # Parallel metasearcher for Internet-based services (WWW, IMAP, LDAP, etc.)
 #
-# $Id: SearchBroker.pm,v 0.5 2003/06/30 13:27:12 nate Exp nate $
+# $Id: SearchBroker.pm,v 0.7 2003/07/02 07:40:05 nate Exp nate $
 
 =head1 NAME
 
@@ -43,7 +43,7 @@ L<http://ausweb.scu.edu.au/aw03/papers/bailey/> for more details.
 =cut
 
 package WWW::SearchBroker;
-our $VERSION = sprintf("%d.%02d", q$Revision: 0.5 $ =~ /(\d+)\.(\d+)/);
+our $VERSION = sprintf("%d.%02d", q$Revision: 0.7 $ =~ /(\d+)\.(\d+)/);
 
 use strict;
 use warnings;

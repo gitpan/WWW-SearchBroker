@@ -1,4 +1,4 @@
-#!/usr/local/bin/perl -w
+#!/usr/bin/env perl
 # Typically run from broker.pl as:
 #	agents/$agent.pl $sid "$query" 'username' 'password'
 # sid -- search id
@@ -34,6 +34,15 @@ carp "[AGENT: Found $first..$last articles, only checking last 50]\n" if DEBUG >
 $first = $last - 50; # Let's make this a touch quicker!
 foreach my $a ($first..$last) {
 	my $body = join('', $c->body($a));
+	if ($c->code > 400) { # See doc for News::NNTPClient
+		if ($c->code == '480') {
+			carp "[AGENT: Discussion group requires authentication, giving up...]\n" if DEBUG >= DEBUG_LOW;
+			last;
+		}
+		carp "[AGENT: Error " . $c->code . "(" . $c->message . "), skipping...]\n" if DEBUG >= DEBUG_LOW;
+		next;
+	}
+
 	if ($body =~ /$what/s) {
 		carp "[AGENT: Found $body]\n" if DEBUG >= DEBUG_HIGH;
 	}

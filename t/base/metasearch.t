@@ -37,7 +37,14 @@ my $search = new WWW::SearchBroker::Search(port => $port);
 print "not " unless $search;
 print "ok 5\n";
 
-print "not " unless $search->send_query('SEARCH','perl *pl','grep','grep','grep');
+my @agent_list = `grep ^agents ../MANIFEST`;
+foreach (@agent_list) {
+	s/\.pl.*//;
+	s#agents/##;
+}
+chomp @agent_list;
+
+print "not " unless $search->send_query('SEARCH','portal', @agent_list);
 print "ok 6\n";
 
 print "not " unless $search->dump_results();

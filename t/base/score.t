@@ -4,8 +4,9 @@ use WWW::SearchBroker::Aggregator_Scorer qw(score);
 
 print "ok 1\n";
 
+my ($dd,$mm,$yy) = (localtime(time-86400))[3,4,5]; $mm++; $yy += 1900;
 my @search_terms = ('foo', 'bar', 'foo bar', 'foo bar fnord');
-my @search_words = ('foodumentally', 'barupulous', '5/15/2002', 'foonatomy', 'barokaly!', 'fnordmaker', '5/15/2003');
+my @search_words = ('foodumentally', 'barupulous', "$mm/$dd/" . ($yy-1), 'foonatomy', 'barokaly!', 'fnordmaker', "$mm/$dd/$yy");
 my @search_urls = ('http://foo.com/fnord/', 'http://bar.com/?foo=bar', 'http://fnord.org/foo/bar.html');
 
 foreach my $i (1..100) {

@@ -1,7 +1,7 @@
 # WWW::SearchBroker::Aggregator_Scorer
 # Results aggregation for WWW::SearchBroker
 #
-# $Id: Aggregator_Scorer.pm,v 1.2 2003/06/29 14:42:59 nate Exp nate $
+# $Id: Aggregator_Scorer.pm,v 1.4 2003/07/03 13:09:52 nate Exp nate $
 
 =head1 NAME
 
@@ -37,7 +37,7 @@ score(), aggregate()
 =cut
 
 package WWW::SearchBroker::Aggregator_Scorer;
-our $VERSION = sprintf("%d.%02d", q$Revision: 1.2 $ =~ /(\d+)\.(\d+)/);
+our $VERSION = sprintf("%d.%02d", q$Revision: 1.4 $ =~ /(\d+)\.(\d+)/);
 
 use strict;
 use warnings;
@@ -53,7 +53,10 @@ require Exporter;
 ###########################################################################
 # Preloaded methods go here.
 use Data::Dumper qw(Dumper);	# for debugging
-use Date::Manip qw(ParseDate UnixDate DateCalc);
+use Date::Manip qw(ParseDate UnixDate DateCalc Date_Init);
+# CPANtesters seem to require the following two lines:
+eval { Date_Init(); };
+Date_Init("TZ=GMT") if $@;
 use Data::Serializer;		# for transceiving data structures over sockets
 use Carp;
 
@@ -88,13 +91,19 @@ sub score($$$) {
 	my ($query,$result,$access_type) = @_;
 	my $score = 0;
 	my @bits = split /\s+/, $query;
-	my $glob = join('.*?', @bits);
+	my $glob = join('.*?', @bits) || $query;
+	croak "[AGGSCORE: Undefined query!]" if !defined $glob;
 
 	carp "[AGGSCORE: Scoring result (" . Dumper($result) . ')]' if DEBUG >= DEBUG_MEDIUM;
 
 	# 3. Personalised results are more interesting than general ones
 	if ($access_type == 2) {
 		$score += 25;
+	}
+
+	if (!defined $result->{'description'}) {
+		carp "[AGGSCORE: No description for $result->{'title'}?]" if DEBUG >= DEBUG_LOW;
+		$result->{'description'} = '(None)';
 	}
 
 	# 1. Exact matches are more interesting than approximate matches
@@ -122,14 +131,16 @@ sub score($$$) {
 
 	# 6. More recent articles are more interesting than old ones
 	# Check for various date formats
-	if ($result->{'description'} =~ m#(\d+[\-/\s]\d+[\-/\s]\d+)#) {
+	if ($result->{'description'} =~ m#(\d{1,2}[\-/\s]\d{1,2}[\-/\s]\d{2,4})#) {
 		my $date = $1;
 		carp "[AGGSCORE: Found date=$1=", ParseDate($1), "=", UnixDate(ParseDate($1),"%s"), "]" if DEBUG >= DEBUG_MEDIUM;
-		my $err;
-		my ($wk,$dd) = &DateCalc($date,"today",\$err) =~ m#0:0:(\d+):(\d+):#;
-		if ($wk == 0 && $dd < 5) {
-			carp "[AGGSCORE: Within 5 days of today!]" if DEBUG >= DEBUG_MEDIUM;
-			$score += 50;
+		if (my $result = &DateCalc($date,"today")) {
+			my ($wk,$dd) = $result =~ m#[\+\-]0:0:(\d+):(\d+):#;
+			carp "[AGGSCORE: Date is $wk weeks and $dd days from now]" if DEBUG >= DEBUG_HIGH;
+			if ($wk == 0 && $dd < 5) {
+				carp "[AGGSCORE: Within 5 days of today!]" if DEBUG >= DEBUG_MEDIUM;
+				$score += 50;
+			}
 		}
 	}
 
@@ -188,6 +199,10 @@ sub aggregate($$$) {
 			my $result = $obj->deserialize($encoded);
 			carp "[AGGSCORE: Found result (" . Dumper($result) . '), scoring...]' if DEBUG >= DEBUG_MEDIUM;
 			my ($k,$v) = each %{$result};
+			if ($v->{'title'} eq 'No results found') {
+				carp "[AGGSCORE: Skipping 'No results found' ($k)]" if DEBUG >= DEBUG_MEDIUM;
+				next;
+			}
 			my ($current_score) = $v->{'relevance'} =~ /^(\d)/; # Just the first digit, we want it to (usually) be smaller than the calculated score;
 			my $calc_score = 0;
 			$calc_score = score(quotemeta($query),$v,0);

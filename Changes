@@ -1,5 +1,11 @@
 Revision history for Perl extension WWW::SearchBroker.
 
+0.06  Wed Jul  2 17:29:46 EST 2003
+	- made (currently hacky) agents eval where perl lives
+	  (portability for my friendly CPAN testers)
+	- made Date::Manip handle unparsable TimeZones (eval and
+	  use GMT on failure).
+
 0.05  Tue Jul  1 23:24:10 EST 2003
 	- refactored some code into Common.pm
 	- cleaned up agent code

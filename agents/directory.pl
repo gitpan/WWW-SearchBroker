@@ -1,4 +1,4 @@
-#!/usr/local/bin/perl -w
+#!/usr/bin/env perl
 # Typically run from broker.pl as:
 #	agents/$agent.pl $sid "$query" 'username' 'password'
 # sid -- search id
@@ -146,12 +146,9 @@ foreach my $value (@sorted) {
 
 	if (@labeleduri) {
 		$description .= ("<b><small>Web:</small></b>\n");
-		foreach $labeleduri (@labeleduri)
-			{
-			unless ($labeleduri =~ /^http/)
-			{
+		foreach $labeleduri (@labeleduri) {
+			unless ($labeleduri =~ /^http/) {
 				$labeleduri = "http://$labeleduri";
-				carp "fixing mds shortcomings in staff directory search...";
 			}
 
 				$labeleduri =~ s#^(.*)$#<a href=\"$labeleduri\">$1</a> #;

@@ -1,4 +1,4 @@
-#!/usr/local/bin/perl -w
+#!/usr/bin/env perl
 ###########################################################################
 # WARNING: This executes commands directly as passed -- evil, evil, evil! #
 # Should only be used for testing purposes by the actually user, not by   #
@@ -25,6 +25,10 @@ my ($sid, $what) = @ARGV;
 umask(0067); # Initial file perms are 600, indicating not yet finished
 my $filename = TEMP_FILE_PATH. "$sid.txt";
 carp '[AGENT: pwd=' . `pwd` . ']';
+if ($what !~ /\s+/) {
+	$what .= ' */*.t';
+	carp '[AGENT: No filespec for grep, interpolating */*.t]';
+}
 carp '[AGENT: ' . COMMAND . "$what >> $filename]\n";
 my $obj = Data::Serializer->new();
 my $count = 0;
@@ -40,8 +44,8 @@ while(<QRY>) {
 		'description' => $desc,
 		'relevance' => scalar(split(/\Q$qn/, $desc)),
 	);
-	print_line($obj->serialize({ $count++ => \%result }) . "\n");
-	#print_line(Dumper \%result);
+	print_line($filename,$obj->serialize({ $count++ => \%result }) . "\n");
+	#print_line($filename,Dumper \%result);
 }
 close(QRY);
 if ($count < 1) {

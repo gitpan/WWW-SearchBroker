@@ -1,4 +1,4 @@
-#!/usr/local/bin/perl -w
+#!/usr/bin/env perl
 # Typically run from broker.pl as:
 #	agents/$agent.pl $sid "$query" 'username' 'password'
 # sid -- search id

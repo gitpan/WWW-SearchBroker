@@ -1,7 +1,7 @@
 # WWW::SearchBroker::Common
 # Service functions for all components of the search broker (SearchBroker)
 #
-# $Id: Common.pm,v 1.1 2003/06/29 14:42:59 nate Exp nate $
+# $Id: Common.pm,v 1.3 2003/07/03 13:09:52 nate Exp nate $
 
 =head1 NAME
 
@@ -19,7 +19,7 @@ Service functions for all components of the search broker
 =cut
 
 package WWW::SearchBroker::Common;
-our $VERSION = sprintf("%d.%02d", q$Revision: 1.1 $ =~ /(\d+)\.(\d+)/);
+our $VERSION = sprintf("%d.%02d", q$Revision: 1.3 $ =~ /(\d+)\.(\d+)/);
 
 require Exporter;
 our @ISA = qw(Exporter);
@@ -27,7 +27,7 @@ our @EXPORT_OK = qw( DEBUG_LOW DEBUG_MEDIUM DEBUG_HIGH DEBUG
 	SERVER_PORT AGENT_PORT_MIN AGENT_PORT_MAX
 	TEMP_FILE_PATH AGENT_PATH STAFF_USERNAME 
 	STUDENT_MAIL_SERVER STAFF_MAIL_SERVER LDAP_SERVER NEWS_SERVER
-	print_line failed );
+	print_line failed parse_results remove_results );
 
 use strict;
 use warnings;
@@ -69,32 +69,41 @@ sub print_line {
 	} else {
 		die "[COMMON: Couldn't append to $filename ($!)]";
 	}
-}
+} # print_line()
 
 # For printing a failed search result; not used as yet
 sub failed {
 	print_line("FAILED!\n");
-}
+} # failed()
 
 # For checking results archived to a file
 sub parse_results {
 	use Data::Serializer;
 	use Data::Dumper;
 	use Carp;
+	my $filename = shift @_;
 
 	my $obj = Data::Serializer->new();
-	if (open(SEARCH, TEMP_FILE_PATH . $ARGV[0] . ".txt")) {
+	if (open(SEARCH, TEMP_FILE_PATH . $filename . ".txt")) {
 		carp "[COMMON: Found results, reading...]\n" if DEBUG;
 		my @data = <SEARCH>;
 		close(SEARCH);
 		foreach my $d (@data) {
 		       chomp $d;
-		       carp "[COMMON: " . Dumper($obj->deserialize($d)) . "]";
+		       carp "[COMMON: " . Dumper($obj->deserialize($d)) . "]" if DEBUG >= DEBUG_MEDIUM;
 		}
+		carp "[COMMON: Found " . scalar(@data) . " results]" if DEBUG >= DEBUG_LOW;
 	} else {
-		die "[COMMON: Couldn't open $ARGV[0]: $!]";
+		die "[COMMON: Couldn't open $filename: $!]";
 	}
-}
+} # parse_results()
+
+# For deleting results archival files
+sub remove_results {
+	my $filename = shift @_;
+
+	unlink(TEMP_FILE_PATH . $filename . ".txt");
+} # remove_results()
 
 =head1 SEE ALSO
 

@@ -1,7 +1,7 @@
 # WWW::SearchBroker::Broker
 # Service functions for the broker component of the search broker (SearchBroker)
 #
-# $Id: Broker.pm,v 1.4 2003/06/29 14:42:59 nate Exp nate $
+# $Id: Broker.pm,v 1.6 2003/07/03 13:09:52 nate Exp nate $
 
 =head1 NAME
 
@@ -46,7 +46,7 @@ Service functions for the broker component of the search broker
 #
 
 package WWW::SearchBroker::Broker;
-our $VERSION = sprintf("%d.%02d", q$Revision: 1.4 $ =~ /(\d+)\.(\d+)/);
+our $VERSION = sprintf("%d.%02d", q$Revision: 1.6 $ =~ /(\d+)\.(\d+)/);
 
 use strict;
 use warnings;
@@ -242,6 +242,7 @@ sub event_loop($) {
 		carp "[BROKER: Checking query $k for completion]" if DEBUG >= DEBUG_HIGH;
 		# Skip if this request doesn't have any agents
 		next unless scalar @{$self->{_requests}->{$k}} > 5;
+		#carp '[BROKER: $k has requests = (' . Dumper(\@{$self->{_requests}->{$k}}) . ')]' if DEBUG >= DEBUG_HIGH; # Trying to catch the heisenbug...
 		if (($t - $self->{_requests}->{$k}[3]) > $self->{_timeout}) {
 			carp "[BROKER: $k timed out!]" if DEBUG >= DEBUG_MEDIUM;
 			# Send on as much as we got
@@ -374,10 +375,14 @@ and child filehandles).
 sub check_for_completion(@) {
 	my @req = @_;
 	my $is_complete = 1;
+	#carp "[BROKER: Checking agents for completion (" . Dumper(@req). "]" if DEBUG >= DEBUG_HIGH; # Trying to catch the heisenbug
 	foreach my $s (splice(@req,5)) {
-		#carp Dumper $s if DEBUG >= DEBUG_MEDIUM;
+		#carp Dumper $s if DEBUG >= DEBUG_MEDIUM; # Trying to catch the heisenbug
 		my ($srch,$agnt) = each %{$s};
 		if (!defined $agnt || !defined $srch) { # How does this happen?  (It's a heisenbug, if I try to dump $s, it's defined, if not, it isn't...)
+			carp "[BROKER: Heisenbug found for " . Dumper($s) .
+				"(agnt=" . (defined($agnt)?1:0) . ", " .
+				"srch=" . (defined($srch)?1:0) . ")!]" if DEBUG >= DEBUG_HIGH;
 			$is_complete = 0;
 			next;
 		}
@@ -474,14 +479,16 @@ sub fork_and_loop($) {
 	carp '[BROKER: Forking infinite loop]' if DEBUG >= DEBUG_MEDIUM;
 	my $ret;
 	if ($ret = fork()) {
-		carp '[BROKER: Child looping]' if DEBUG >= DEBUG_MEDIUM;
-		while ($self->event_loop())
-			{ }
+		carp "[BROKER: Parent returning (child PID=$ret)]" if DEBUG >= DEBUG_MEDIUM;
+		# perldoc -f fork tells us to reopen to /dev/null, will this work?
+		close($self->{_server});
+		$self->DESTROY;
 		return $ret;
 	}
-	carp '[BROKER: Parent returning]' if DEBUG >= DEBUG_MEDIUM;
-	#$self->DESTROY;
-	return $ret;
+	carp '[BROKER: Child looping]' if DEBUG >= DEBUG_MEDIUM;
+	while ($self->event_loop())
+		{ }
+	return undef;
 } # end fork_and_loop()
 ###########################################################################
 

@@ -37,7 +37,8 @@ if (@ARGV) {
 	}
     }
 } else {
-    @tests = (<base/*.t>, <agents/*.t>);
+    #@tests = (<base/*.t>, <agents/*.t>);
+    @tests = (<base/*.t>);
     push(@tests,  <live/*.t>) if -f "live/ENABLED";
     push(@tests, <net/*.t>) if -f "net/config.pl";
 }

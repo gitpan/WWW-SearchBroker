@@ -1,7 +1,7 @@
 # WWW::SearchBroker::Search
 # Object/methods for the search client component of the search broker (SearchBroker)
 #
-# $Id: Search.pm,v 1.3 2003/06/29 14:42:59 nate Exp nate $
+# $Id: Search.pm,v 1.5 2003/07/03 13:09:52 nate Exp nate $
 
 =head1 NAME
 
@@ -46,7 +46,7 @@ Service functions for the search component of the search broker
 ###########################################################################
 
 package WWW::SearchBroker::Search;
-our $VERSION = sprintf("%d.%02d", q$Revision: 1.3 $ =~ /(\d+)\.(\d+)/);
+our $VERSION = sprintf("%d.%02d", q$Revision: 1.5 $ =~ /(\d+)\.(\d+)/);
 
 use strict;
 use warnings;
@@ -169,6 +169,7 @@ sub dump_results {
 	}
 
 	carp "[QUERY: Result set: " . Dumper($result_set->{'results'}) . "]" if DEBUG;
+	return [ 'No results found' ] if (!@{$result_set->{'results'}});
 	return @{$result_set->{'results'}};
 } # end dump_results()
 ###########################################################################

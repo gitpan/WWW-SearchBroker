@@ -1,4 +1,4 @@
-#!/usr/local/bin/perl -w
+#!/usr/bin/env perl
 # Typically run from broker.pl as:
 #	agents/$agent.pl $sid "$query"
 # sid -- search id
@@ -46,6 +46,7 @@ foreach my $table (@tables) {
 		my $title_node = $table->look_down(_tag => 'b');
 		my $url_tag    = $title_node->look_down(_tag => 'a');
 		my ($desc,$relevance) = $table->as_HTML() =~ /<br>(.*?)<br>.*?(\d+%)<\/td>/;
+		$relevance =~ s/\%//; # Remove the %age sign
 		my %result = (
 			'title' => $title_node->as_text(),
 			'link' => $url_tag->attr('href'),
