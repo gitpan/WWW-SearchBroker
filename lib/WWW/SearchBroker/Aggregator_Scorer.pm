@@ -34,15 +34,6 @@ the the search broker (WWW::SearchBroker).
 
 score(), aggregate()
 
-=head1 AUTHOR
-
-Nathan Bailey, E<lt>nate@cpan.orgE<gt>
-
-=head1 SEE ALSO
-
-L<WWW::SearchBroker>, L<WWW::SearchBroker::Broker>,
-L<WWW::SearchBroker::Search>, I<tests/www_searchbroker.pl>.
-
 =cut
 
 package WWW::SearchBroker::Aggregator_Scorer;
@@ -218,6 +209,16 @@ sub aggregate($$$) {
 ###########################################################################
 
 =back
+
+=head1 SEE ALSO
+
+L<WWW::SearchBroker>, L<WWW::SearchBroker::Search>,
+L<WWW::SearchBroker::Broker>, L<WWW::SearchBroker::Common>,
+I<tests/www_searchbroker.pl>.
+
+=head1 AUTHOR
+
+Nathan Bailey, E<lt>nate@cpan.orgE<gt>
 
 =cut
 

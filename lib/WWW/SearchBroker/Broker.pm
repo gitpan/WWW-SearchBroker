@@ -44,18 +44,6 @@ Service functions for the broker component of the search broker
 #   List the available search agents
 #       (no arguments expected/required)
 #
-=pod
-
-=head1 AUTHOR
-
-Nathan Bailey, E<lt>nate@cpan.orgE<gt>
-
-=head1 SEE ALSO
-
-L<WWW::SearchBroker>, L<WWW::SearchBroker::Search>,
-I<tests/www_searchbroker.pl>.
-
-=cut
 
 package WWW::SearchBroker::Broker;
 our $VERSION = sprintf("%d.%02d", q$Revision: 1.4 $ =~ /(\d+)\.(\d+)/);
@@ -81,7 +69,7 @@ use WWW::SearchBroker::Common qw(DEBUG_LOW DEBUG_MEDIUM DEBUG_HIGH
 
 ###########################################################################
 # Globals
-use constant DEBUG => DEBUG_HIGH;	# Debugging is ON/off
+use constant DEBUG => DEBUG_MEDIUM;	# Debugging is ON/off
 my %agents;
 my $obj = Data::Serializer->new();
 
@@ -93,6 +81,8 @@ chomp @AGENT_LIST;
 ###########################################################################
 # Methods and internal functions ##########################################
 ###########################################################################
+
+=over 4
 
 =item new(port => $server_port)
 
@@ -136,8 +126,6 @@ sub new {
 
 	return $self;
 }
-
-=over 4
 
 =item event_loop()
 
@@ -280,8 +268,6 @@ sub event_loop($) {
 ##  alarm($previous_alarm);
 } # end event_loop()
 ###########################################################################
-
-=over 4
 
 =item get_sid()
 
@@ -477,7 +463,7 @@ sub aggregate_and_return($$$$) {
 
 =item fork_and_loop()
 
-
+For tests (e.g. t/base/search.t).
 
 =cut
 
@@ -519,6 +505,12 @@ expected that the module will work across a variety of standards-based
 environments but this has not been demonstrated.  The author welcomes
 feedback (especially patches!) for any assumptions made that don't
 comply with different environments.
+
+=head1 SEE ALSO
+
+L<WWW::SearchBroker>, L<WWW::SearchBroker::Search>,
+L<WWW::SearchBroker::Common>, L<WWW::SearchBroker::Aggregator_Scorer>,
+I<tests/www_searchbroker.pl>.
 
 =head1 AUTHOR
 

@@ -12,7 +12,7 @@ use strict;
 use Data::Dumper;
 use Data::Serializer;
 use Carp;
-use WWW::SearchBroker::Common qw(DEBUG DEBUG_HIGH TEMP_FILE_PATH);
+use WWW::SearchBroker::Common qw(DEBUG DEBUG_HIGH TEMP_FILE_PATH print_line);
 use constant COMMAND => 'grep -Hs '; # the grep command to be run
 
 if (scalar @ARGV < 2) {
@@ -24,7 +24,7 @@ if (scalar @ARGV < 2) {
 my ($sid, $what) = @ARGV;
 umask(0067); # Initial file perms are 600, indicating not yet finished
 my $filename = TEMP_FILE_PATH. "$sid.txt";
-warn `pwd`;
+carp '[AGENT: pwd=' . `pwd` . ']';
 carp '[AGENT: ' . COMMAND . "$what >> $filename]\n";
 my $obj = Data::Serializer->new();
 my $count = 0;
@@ -51,22 +51,8 @@ if ($count < 1) {
 		'description' => '',
 		'relevance' => 0,
 	);
-	print_line($obj->serialize({ 0 => \%result }) . "\n");
+	print_line($filename,$obj->serialize({ 0 => \%result }) . "\n");
 }
 sleep(5);			# Simulate slower agents
 chmod(0644, $filename);		# Group readable, indicating finished
 carp "[AGENT: Completed successfully (saved to $filename)]\n";
-
-sub failed {
-	print_line("FAILED!\n");
-}
-
-sub print_line {
-	my $line = shift;
-	if (open(SID_FILE,">>$filename")) {
-		print SID_FILE $line;
-		close(SID_FILE);
-	} else {
-		die "[AGENT: Couldn't append to $filename ($!)]";
-	}
-}

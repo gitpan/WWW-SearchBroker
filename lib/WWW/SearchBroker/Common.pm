@@ -16,15 +16,6 @@ WWW::SearchBroker::Common - Service functions for all components of SearchBroker
 Service functions for all components of the search broker
 (WWW::SearchBroker).
 
-=head1 AUTHOR
-
-Nathan Bailey, E<lt>nate@cpan.orgE<gt>
-
-=head1 SEE ALSO
-
-L<WWW::SearchBroker>, L<WWW::SearchBroker::Search>,
-I<tests/www_searchbroker.pl>.
-
 =cut
 
 package WWW::SearchBroker::Common;
@@ -34,8 +25,9 @@ require Exporter;
 our @ISA = qw(Exporter);
 our @EXPORT_OK = qw( DEBUG_LOW DEBUG_MEDIUM DEBUG_HIGH DEBUG
 	SERVER_PORT AGENT_PORT_MIN AGENT_PORT_MAX
-	TEMP_FILE_PATH AGENT_PATH
-	STUDENT_MAIL_SERVER STAFF_MAIL_SERVER STAFF_USERNAME LDAP_SERVER );
+	TEMP_FILE_PATH AGENT_PATH STAFF_USERNAME 
+	STUDENT_MAIL_SERVER STAFF_MAIL_SERVER LDAP_SERVER NEWS_SERVER
+	print_line failed );
 
 use strict;
 use warnings;
@@ -62,6 +54,59 @@ use constant STUDENT_MAIL_SERVER => 'staffmail.yourdomain.com';
 use constant STAFF_MAIL_SERVER => 'studentmail.yourdomain.com';
 use constant STAFF_USERNAME => 'yourname';
 use constant LDAP_SERVER => 'directory.yourdomain.com';
+use constant NEWS_SERVER => 'newsserver.yourdomain.com';
+
+###########################################################################
+# Functions -- these are for search agents only and perhaps should
+# be kept elsewhere...
+
+# For printing a line into a results file
+sub print_line {
+	my ($filename,$line) = @_;
+	if (open(SID_FILE,">>$filename")) {
+		print SID_FILE $line;
+		close(SID_FILE);
+	} else {
+		die "[COMMON: Couldn't append to $filename ($!)]";
+	}
+}
+
+# For printing a failed search result; not used as yet
+sub failed {
+	print_line("FAILED!\n");
+}
+
+# For checking results archived to a file
+sub parse_results {
+	use Data::Serializer;
+	use Data::Dumper;
+	use Carp;
+
+	my $obj = Data::Serializer->new();
+	if (open(SEARCH, TEMP_FILE_PATH . $ARGV[0] . ".txt")) {
+		carp "[COMMON: Found results, reading...]\n" if DEBUG;
+		my @data = <SEARCH>;
+		close(SEARCH);
+		foreach my $d (@data) {
+		       chomp $d;
+		       carp "[COMMON: " . Dumper($obj->deserialize($d)) . "]";
+		}
+	} else {
+		die "[COMMON: Couldn't open $ARGV[0]: $!]";
+	}
+}
+
+=head1 SEE ALSO
+
+L<WWW::SearchBroker>, L<WWW::SearchBroker::Search>,
+L<WWW::SearchBroker::Broker>, L<WWW::SearchBroker::Aggregator_Scorer>,
+I<tests/www_searchbroker.pl>.
+
+=head1 AUTHOR
+
+Nathan Bailey, E<lt>nate@cpan.orgE<gt>
+
+=cut
 
 1;
 

@@ -6,6 +6,7 @@ agents/directory.pl		LDAP directory searcher
 agents/grep.pl			Sample agent for simplicity/testing
 agents/imap.pl			IMAP INBOX/Sent folder searcher
 agents/monash_web.pl		Monash web search engine searcher
+agents/nntp.pl			NNTP (UseNet/news) searcher
 broker.pl			Temporarily required for t/base/search.t
 lib/List/Misc.pm		Utility module for managing arrays/lists
 lib/WWW/SearchBroker.pm		Placeholder/documentation
@@ -19,6 +20,7 @@ t/agents/directory.t		Test the LDAP directory agent
 t/agents/grep.t			Test the grep agent (simple sample agent)
 t/agents/imap.t			Test the imap agent
 t/agents/monash_web.t		Test the Monash web index agent
+t/agents/nntp.t			Test the NNTP (UseNet/news) agent
 t/base/broker.t			Test the broker component
 t/base/common.t			Test the common module (global values)
 t/base/score.t			Test the scoring function

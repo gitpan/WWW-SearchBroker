@@ -6,8 +6,13 @@ WriteMakefile(
 	VERSION_FROM	=> 'lib/WWW/SearchBroker.pm', # finds $VERSION
 	PREREQ_PM	=> {
 				'Data::Serializer'	=> "0.17",
-				'WWW::Search'		=> 0,
 				'LWP::UserAgent'	=> 0,
+				'WWW::Search'		=> 0,
+				'Date::Manip'		=> 0,
+				'HTML::TreeBuilder'	=> 0,
+				'News::NNTPClient'	=> 0,
+				'Net::LDAP'		=> 0,
+				'Mail::IMAPClient'	=> 0,
 			},
 	($] >= 5.005 ?    ## Add these new keywords supported since 5.005
 		(ABSTRACT_FROM => 'lib/WWW/SearchBroker.pm', # retrieve abstract from module

@@ -1,7 +1,7 @@
 # WWW::SearchBroker
 # Parallel metasearcher for Internet-based services (WWW, IMAP, LDAP, etc.)
 #
-# $Id: SearchBroker.pm,v 0.4 2003/06/30 13:27:12 nate Exp nate $
+# $Id: SearchBroker.pm,v 0.5 2003/06/30 13:27:12 nate Exp nate $
 
 =head1 NAME
 
@@ -9,7 +9,30 @@ WWW::SearchBroker - Parallel metasearcher for Internet-based services (WWW, IMAP
 
 =head1 SYNOPSIS
 
-...
+	use WWW::SearchBroker::Broker;
+	# Create a Broker
+	my $broker = new WWW::SearchBroker::Broker(
+		timeout => 10, # wait up to 10s for responses from agents
+	);
+	my $ret = $broker->fork_and_loop();
+
+	use WWW::SearchBroker::Search;
+	# Port the broker server is running on
+	my $port = 9000;
+
+	# Search query
+	my $srch = 'SEARCH<15><a,b,c><foo bar>';
+
+	# Create a search requestor
+	my $search = new WWW::SearchBroker::Search(port => $port);
+
+	$search->send_query('SEARCH','perl *pl','grep','grep','grep');
+	$search->dump_results();
+
+	# Quit broker
+	$search = new WWW::SearchBroker::Search(port => $port);
+	$search->send_query('QUIT','','');
+	$search->dump_results();
 
 =head1 DESCRIPTION
 
@@ -17,19 +40,10 @@ Parallel metasearcher for Internet-based services (WWW, IMAP, LDAP,
 etc.).  See 'Personalised metasearch: Augmenting your brain'
 L<http://ausweb.scu.edu.au/aw03/papers/bailey/> for more details.
 
-=head1 AUTHOR
-
-Nathan Bailey, E<lt>nate@cpan.orgE<gt>
-
-=head1 SEE ALSO
-
-L<WWW::SearchBroker::Broker>, L<WWW::SearchBroker::Search>,
-I<tests/www_searchbroker.pl>.
-
 =cut
 
 package WWW::SearchBroker;
-our $VERSION = sprintf("%d.%02d", q$Revision: 0.4 $ =~ /(\d+)\.(\d+)/);
+our $VERSION = sprintf("%d.%02d", q$Revision: 0.5 $ =~ /(\d+)\.(\d+)/);
 
 use strict;
 use warnings;
@@ -44,6 +58,12 @@ expected that the module will work across a variety of standards-based
 environments but this has not been demonstrated.  The author welcomes
 feedback (especially patches!) for any assumptions made that don't
 comply with different environments.
+
+=head1 SEE ALSO
+
+L<WWW::SearchBroker>, L<WWW::SearchBroker::Search>,
+L<WWW::SearchBroker::Common>, L<WWW::SearchBroker::Aggregator_Scorer>,
+I<tests/www_searchbroker.pl>.
 
 =head1 AUTHOR
 

@@ -9,7 +9,7 @@ use HTML::TreeBuilder;
 use Data::Dumper;
 use Data::Serializer;
 use Carp;
-use WWW::SearchBroker::Common qw(DEBUG DEBUG_HIGH TEMP_FILE_PATH STAFF_MAIL_SERVER STUDENT_MAIL_SERVER);
+use WWW::SearchBroker::Common qw(DEBUG DEBUG_HIGH TEMP_FILE_PATH STAFF_MAIL_SERVER STUDENT_MAIL_SERVER print_line);
 
 if (scalar @ARGV < 2) {
 	warn scalar @ARGV . " arguments presented, two required:";
@@ -52,22 +52,8 @@ foreach my $table (@tables) {
 			'description' => $desc,
 			'relevance' => $relevance,
 		);
-		print_line($obj->serialize({ $count++ => \%result}) . "\n");
+		print_line($filename,$obj->serialize({ $count++ => \%result}) . "\n");
 	}
 }
 chmod(0644, $filename); # Group readable, indicating finished
 carp "[AGENT: Completed successfully (saved to $filename)]\n" if DEBUG;
-
-sub failed {
-	print_line("FAILED!\n");
-}
-
-sub print_line {
-	my $line = shift;
-	if (open(SID_FILE,">>$filename")) {
-		print SID_FILE $line;
-		close(SID_FILE);
-	} else {
-		die "[AGENT: Couldn't append to $filename ($!)]";
-	}
-}

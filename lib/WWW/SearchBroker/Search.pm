@@ -44,18 +44,6 @@ Service functions for the search component of the search broker
 #   List the available search agents
 #       (no arguments expected/required)
 ###########################################################################
-=pod
-
-=head1 AUTHOR
-
-Nathan Bailey, E<lt>nate@cpan.orgE<gt>
-
-=head1 SEE ALSO
-
-L<WWW::SearchBroker>, L<WWW::SearchBroker::Broker>,
-I<tests/www_searchbroker.pl>.
-
-=cut
 
 package WWW::SearchBroker::Search;
 our $VERSION = sprintf("%d.%02d", q$Revision: 1.3 $ =~ /(\d+)\.(\d+)/);
@@ -218,6 +206,18 @@ sub DESTROY {
 		$self->{_remote}->close();
 	}
 }
+
+=head1 SEE ALSO
+
+L<WWW::SearchBroker>, L<WWW::SearchBroker::Broker>,
+L<WWW::SearchBroker::Common>, L<WWW::SearchBroker::Aggregator_Scorer>,
+I<tests/www_searchbroker.pl>.
+
+=head1 AUTHOR
+
+Nathan Bailey, E<lt>nate@cpan.orgE<gt>
+
+=cut
 
 1;
 

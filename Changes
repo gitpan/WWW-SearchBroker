@@ -1,4 +1,13 @@
 Revision history for Perl extension WWW::SearchBroker.
 
+0.05  Tue Jul  1 23:24:10 EST 2003
+	- refactored some code into Common.pm
+	- cleaned up agent code
+	- added some more agents
+
+0.04  Mon Jun 30 23:30:00 EST 2003
+	- fixed some bugs
+	- added some more agents
+
 0.03  Sun Jun 29 20:07:48 EST 2003
 	- original version for CPAN

@@ -6,11 +6,11 @@
 # username -- MDS username
 # password -- MDS password (what about passwords with quotes in them?)
 use strict;
-use Mail::IMAPClient;
+use Net::LDAP;
 use Data::Dumper;
 use Data::Serializer;
 use Carp;
-use WWW::SearchBroker::Common qw(DEBUG DEBUG_LOW DEBUG_MEDIUM DEBUG_HIGH TEMP_FILE_PATH LDAP_SERVER);
+use WWW::SearchBroker::Common qw(DEBUG DEBUG_LOW DEBUG_MEDIUM DEBUG_HIGH TEMP_FILE_PATH LDAP_SERVER print_line);
 use List::Misc qw(first_value all_values);
 
 if (scalar @ARGV != 2 and scalar @ARGV != 4) {
@@ -23,16 +23,10 @@ umask(0067); # Initial file perms are 600, indicating not yet finished
 my $filename = TEMP_FILE_PATH . "$sid.txt";
 my $obj = Data::Serializer->new();
 
+#########################################################################
 my $include_schedule = undef;
 my $limit = 20;   # maximum number of items returned
 my $count;
-
-#########################################################################
-# Open all the LDAP stuff
-#########################################################################
-
-# we need to use the module
-use Net::LDAP;
 
 # we open a new instance of this object (connects to LDAP_SERVER)
 my $ld = Net::LDAP->new(LDAP_SERVER);
@@ -49,7 +43,7 @@ if (!$ld->bind) {
 }
 
 #########################################################################
-# Search for NAME or Phone Number
+# Search for NAME (cn) or other field
 #########################################################################
 
 my ($mesg, $mesgcn, $entry, $filter);
@@ -127,7 +121,7 @@ foreach my $value (@sorted) {
 # Generate the formatted entry
 	my $description = '';
 	foreach $mail (@mail) {
-		if (my $image = get_image('/interactive/directory/its_staff.comp', email => lc($mail))) {
+		if (my $image = get_image($mail)) {
 			$description .= (qq(<img src="$image"><br>));
 		}
 	}
@@ -186,42 +180,14 @@ foreach my $value (@sorted) {
 		'description' => $description,
 		'relevance' => 0,
 	);
-	print_line($obj->serialize({ $count++ => \%result}) . "\n");
+	print_line($filename,$obj->serialize({ $count++ => \%result}) . "\n");
 } # while
 
 #########################################################################
-# Display a prefilled search window and the search results count
-#########################################################################
-
-my $entry_txt = "entry"; if ($count != 1) {$entry_txt = "entries";}
-my $entry_cnt = $count;
-if ($count == 0) {$entry_cnt = "no";}
-if ($count >= $limit) {$entry_cnt = "a maximum of $limit";}
-
-#########################################################################
-# Clean up
-#########################################################################
-
 $ld->unbind;
 chmod(0644, $filename); # Group readable, indicating finished
-my $pwd = `pwd`;
-chomp $pwd;
-carp "[AGENT: Completed successfully (saved to $pwd/$filename)]\n" if DEBUG;
+carp "[AGENT: Completed successfully (saved to $filename)]\n" if DEBUG;
 
-sub failed {
-	print_line("FAILED!\n");
-}
-
-sub print_line {
-	my $line = shift;
-	if (open(SID_FILE,">>$filename")) {
-		print SID_FILE $line;
-		close(SID_FILE);
-	} else {
-		die "[AGENT: Couldn't append to $filename ($!)]";
-	}
-}
-
-sub get_image {
+sub get_image() {
 	return '';
 }
