@@ -16,6 +16,11 @@ LIMITATIONS:
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
     General Public License for more details.
 
+DESCRIPTION:
+    See 'perldoc WWW::SearchBroker' and 'Personalised metasearch:
+    Augmenting your brain' <http://ausweb.scu.edu.au/aw03/papers/bailey/>
+    for more details.
+
 *******************************************************************************
 STATUS:
     This code should be considered very much as work-in-progress.  Any
@@ -23,13 +28,14 @@ STATUS:
     status is as follows:
 Name               DSLIP  Description                               Info
 -----------------  -----  ----------------------------------------- -----
-WWW::SearchBroker  bdpOg  Parallel metasearcher for 'net services   NATE
+WWW::SearchBroker  adpOg  Parallel metasearcher for 'net services   NATE
 
 INSTALLATION:
     WWW::SearchBroker uses the following modules/distributions.
 
 	LWP::UserAgent	 - required (for non-WWW::Search searching)
 	WWW::Search	 - required (for handcrafted web searchers)
+	Data::Serializer - required (for serialized socket communications)
 	Net::LDAP	 - required (for LDAP directory searching)
 	Mail::IMAPClient - required (for IMAP mailbox searching)
 	WWW::Scraper	 - optional (for scraper-based searches, esp. Sherlock)
@@ -39,9 +45,6 @@ INSTALLATION:
     WWW::Search; use Net::LDAP; use Mail::IMAPClient; use WWW::Scraper;"') then
     build/test/install WWW::SearchBroker by doing:
 
-*******************************************************************************
-*** NOTE!!! This isn't done yet.  Will be done for the next version.
-*******************************************************************************
             perl Makefile.PL
             make
             make test
@@ -60,6 +63,9 @@ COMPATIBILITY:
 TODO:
     Convert existing file-based comms to debug-only code and use
     sockets exclusively.
+    Look at using LWP::PUA (ParallelUserAgent) for WWW searches
+    Complete refactoring to use of Common.pm
+    Complete testing of LDAP and WWW components and add to distribution.
 
 BUGS:
     Bug reports can be sent to the author via his CPAN address.

@@ -1,4 +1,4 @@
-#!/usr/bin/perl -w
+#!/usr/local/bin/perl -w
 # Typically run from broker.pl as:
 #	agents/$agent.pl $sid "$query" 'username' 'password'
 # sid -- search id
@@ -12,17 +12,16 @@ use Data::Serializer;
 use Carp;
 use WWW::SearchBroker::Common qw(DEBUG DEBUG_HIGH TEMP_FILE_PATH STAFF_MAIL_SERVER STUDENT_MAIL_SERVER);
 
-if (scalar @ARGV < 4) {
-	warn scalar @ARGV . " arguments presented, four required:";
-	warn "Usage: $0 103 search_query username password\n";
+if (scalar @ARGV < 2) {
+	warn scalar @ARGV . " arguments presented, two required:";
+	warn "Usage: $0 103 search_query\n";
 	exit;
 }
 my ($sid, $what,$user,$pass) = @ARGV;
 umask(0067); # Initial file perms are 600, indicating not yet finished
 my $filename = TEMP_FILE_PATH . "$sid.txt";
-($user,$pass) = ($user, $pass); # Can't access student email from non-portal
 my $server = STAFF_MAIL_SERVER;
-$server = STUDENT_MAIL_SERVER if $user =~ /\d$/; # UGLY!!!
+$server = STUDENT_MAIL_SERVER if $user =~ /\d$/; # UGLY!!! # Can't access student email from non-portal
 my $imap = Mail::IMAPClient->new( Server => $server,
 		#Debug => 1,
 		Uid => 1,

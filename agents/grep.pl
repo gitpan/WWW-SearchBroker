@@ -1,4 +1,4 @@
-#!/usr/bin/perl -w
+#!/usr/local/bin/perl -w
 ###########################################################################
 # WARNING: This executes commands directly as passed -- evil, evil, evil! #
 # Should only be used for testing purposes by the actually user, not by   #

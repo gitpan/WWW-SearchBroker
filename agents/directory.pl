@@ -1,4 +1,4 @@
-#!/usr/bin/perl -w
+#!/usr/local/bin/perl -w
 # Typically run from broker.pl as:
 #	agents/$agent.pl $sid "$query" 'username' 'password'
 # sid -- search id
@@ -10,12 +10,12 @@ use Mail::IMAPClient;
 use Data::Dumper;
 use Data::Serializer;
 use Carp;
-use WWW::SearchBroker::Common qw(DEBUG DEBUG_HIGH TEMP_FILE_PATH LDAP_SERVER);
+use WWW::SearchBroker::Common qw(DEBUG DEBUG_LOW DEBUG_MEDIUM DEBUG_HIGH TEMP_FILE_PATH LDAP_SERVER);
 use List::Misc qw(first_value all_values);
 
-if (scalar @ARGV < 4) {
-	warn scalar @ARGV . " arguments presented, four required:";
-	warn "Usage: $0 103 search_query username password\n";
+if (scalar @ARGV != 2 and scalar @ARGV != 4) {
+	warn scalar @ARGV . " arguments presented, two or four required:";
+	warn "Usage: $0 103 search_query [username password]\n";
 	exit;
 }
 my ($sid,$query,$user,$pass) = @ARGV;
@@ -24,7 +24,7 @@ my $filename = TEMP_FILE_PATH . "$sid.txt";
 my $obj = Data::Serializer->new();
 
 my $include_schedule = undef;
-my $limit = 200;   # maximum number of items returned
+my $limit = 20;   # maximum number of items returned
 my $count;
 
 #########################################################################
@@ -58,7 +58,7 @@ my  $eqkey = ""; my  $eqvalue = "";
 if ($query =~ /=/) {
 	$filter = "(&(|($query))(objectclass=monashPerson)(|(!(monashpendingdelete=*))(monashgraceperiod=1)))";       # enter a filter key directly
 	($eqkey, $eqvalue) = split /=/, $query;
-	print("<!--eqkey=$eqkey-->\n");
+	carp "[AGENT: eqkey=$eqkey]\n" if DEBUG >= DEBUG_MEDIUM;
 } else {
 	$query = "*$query*"; $query =~ s/ +/*/g;
 	$query =~ s/\*\*+/*/g;
@@ -69,7 +69,7 @@ if ($query =~ /=/) {
 	$filter = "(&(|(cn=$query)(ou=$query)(title=$query))(|(ou=Staff)(ou=Associated Organizations))(objectclass=monashPerson)(|(!(monashpendingdelete=*))(monashgraceperiod=1)))";
 }
 
-print("<!--filter=$filter-->\n");
+carp "[AGENT: filter=$filter]\n" if DEBUG >= DEBUG_MEDIUM;
 
 $mesg = $ld->search
           (
@@ -124,34 +124,34 @@ foreach my $value (@sorted) {
 	my $location = $buildingname."-".$roomnumber.", ".$l;
 	$location =~ s/-,//;
 
-# Display the formatted entry
-	# print( "<b><big>$personaltitle $cn</big></b><br>" );
+# Generate the formatted entry
+	my $description = '';
 	foreach $mail (@mail) {
 		if (my $image = get_image('/interactive/directory/its_staff.comp', email => lc($mail))) {
-			print(qq(<img src="$image"><br>));
+			$description .= (qq(<img src="$image"><br>));
 		}
 	}
 
-	print("$title<br>\n")  if $title;
-	print("$ou<br>\n")  if $ou;
-	print("<b><small>Voice:</small></b> $telephonenumber<br>\n")
+	$description .= ("$title<br>\n")  if $title;
+	$description .= ("$ou<br>\n")  if $ou;
+	$description .= ("<b><small>Voice:</small></b> $telephonenumber<br>\n")
 	      if $telephonenumber;
-	print("<b><small>FAX:</small></b> $facsimiletelephonenumber<br>\n")
+	$description .= ("<b><small>FAX:</small></b> $facsimiletelephonenumber<br>\n")
 	      if $facsimiletelephonenumber;
-	print("<b><small>Location:</small></b> $location<br>\n")
+	$description .= ("<b><small>Location:</small></b> $location<br>\n")
 	      if $location;
 	if (@mail) {
-		print("<b><small>Email:</small></b>\n");
+		$description .= ("<b><small>Email:</small></b>\n");
 		foreach $mail (@mail) {
 #		 $mail =~ s/(.*)/<a href=\"mailto:$1\">$1<\/a> /;
 			$mail =~ s#^(.*)$#<a href=\"/email/sendmail.html?to=$1\">$1</a> #;
-			print($mail);
+			$description .= ($mail);
 			}
-		print("<br>\n");
+		$description .= ("<br>\n");
 	}
 
 	if (@labeleduri) {
-		print("<b><small>Web:</small></b>\n");
+		$description .= ("<b><small>Web:</small></b>\n");
 		foreach $labeleduri (@labeleduri)
 			{
 			unless ($labeleduri =~ /^http/)
@@ -161,29 +161,29 @@ foreach my $value (@sorted) {
 			}
 
 				$labeleduri =~ s#^(.*)$#<a href=\"$labeleduri\">$1</a> #;
-				print($labeleduri);
+				$description .= ($labeleduri);
 			}
-		print("<br>\n");
+		$description .= ("<br>\n");
 	}
 
 	if ($monashgoofeyhandle) {
-		print("<b><small>Goofey:</small></b> ".$monashgoofeyhandle."<br>\n");
+		$description .= ("<b><small>Goofey:</small></b> ".$monashgoofeyhandle."<br>\n");
 	}
 
 	if ($eqkey) {
-		print("<b><small>$eqkey:</small></b> ".$eqvalue."<br>\n");
+		$description .= ("<b><small>$eqkey:</small></b> ".$eqvalue."<br>\n");
 	}
 #	if ($include_schedule && $count == 1) {
 #		$m->comp('/resources/yourcal.comp');
 #	}
 #	if ($edit){
-#		print('<a href="https://mdsadmin.monash.edu.au/cgi-bin/modifymdsdetails">[edit]</a><br>');
+#		$description .= ('<a href="https://mdsadmin.monash.edu.au/cgi-bin/modifymdsdetails">[edit]</a><br>');
 #	}
 	#print Dumper $result;
 	my %result = (
-		'title' => $cn,
+		'title' => "$personaltitle $cn",
 		'link' => '', # link
-		'description' => $mail,
+		'description' => $description,
 		'relevance' => 0,
 	);
 	print_line($obj->serialize({ $count++ => \%result}) . "\n");

@@ -1,4 +1,4 @@
-print "1..11\n";
+print "1..9\n";
 
 use WWW::SearchBroker::Broker;
 
@@ -43,18 +43,10 @@ print "ok 6\n";
 print "not " unless $search->dump_results();
 print "ok 7\n";
 
-# List available agents
-my $search = new WWW::SearchBroker::Search(port => $port);
-print "not " unless $search->send_query('LIST','','');
+# Quit broker
+$search = new WWW::SearchBroker::Search(port => $port);
+print "not " unless $search->send_query('QUIT','','');
 print "ok 8\n";
 
 print "not " unless $search->dump_results();
 print "ok 9\n";
-
-# Quit broker
-my $search = new WWW::SearchBroker::Search(port => $port);
-print "not " unless $search->send_query('QUIT','','');
-print "ok 10\n";
-
-print "not " unless $search->dump_results();
-print "ok 11\n";

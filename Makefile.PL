@@ -5,6 +5,7 @@ WriteMakefile(
 	NAME		=> 'WWW::SearchBroker',
 	VERSION_FROM	=> 'lib/WWW/SearchBroker.pm', # finds $VERSION
 	PREREQ_PM	=> {
+				'Data::Serializer'	=> "0.17",
 				'WWW::Search'		=> 0,
 				'LWP::UserAgent'	=> 0,
 			},

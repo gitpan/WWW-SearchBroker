@@ -56,12 +56,12 @@ use constant AGENT_PORT_MIN => 9001;	# pick something not in use
 use constant AGENT_PORT_MAX => 9099;	# pick something not in use
 ###########################################################################
 
-################################################################# CHANGE
-# These values will need to be changed for imap/ldap to work	# CHANGE
-use constant STUDENT_MAIL_SERVER => 'staffmail.domain.com';	# CHANGE
-use constant STAFF_MAIL_SERVER => 'studentmail.domain.com';	# CHANGE
-use constant STAFF_USERNAME => 'myname';			# CHANGE
-use constant LDAP_SERVER => 'directory.domain.com';		# CHANGE
+###########################################################################
+# Site-specific config -- you will need to edit these values
+use constant STUDENT_MAIL_SERVER => 'staffmail.yourdomain.com';
+use constant STAFF_MAIL_SERVER => 'studentmail.yourdomain.com';
+use constant STAFF_USERNAME => 'yourname';
+use constant LDAP_SERVER => 'directory.yourdomain.com';
 
 1;
 
